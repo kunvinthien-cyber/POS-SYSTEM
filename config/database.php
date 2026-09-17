@@ -59,9 +59,15 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? [
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            ] : [],
+                // TiDB Cloud Serverless only accepts encrypted MySQL connections.
+                // In the production Alpine image this is provided by ca-certificates.
+                PDO::MYSQL_ATTR_SSL_CA => env('DB_SSL_CA'),
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('DB_SSL_CA')
+                    ? true
+                    : null,
+            ], static fn ($value) => $value !== null) : [],
         ],
 
         'mariadb' => [

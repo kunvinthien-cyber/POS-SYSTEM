@@ -11,6 +11,9 @@ RUN npm run build
 
 FROM php:8.4-cli-alpine
 
+# TiDB Cloud validates TLS connections against the system CA bundle installed below.
+ENV DB_SSL_CA=/etc/ssl/cert.pem
+
 # Install system dependencies
 RUN apk add --no-cache \
     ca-certificates \
