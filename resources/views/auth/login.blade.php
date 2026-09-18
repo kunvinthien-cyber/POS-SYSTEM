@@ -39,9 +39,38 @@
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button id="login-submit" class="ms-3">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
     </form>
+
+    <section class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm" aria-labelledby="demo-accounts-title">
+        <div class="mb-3">
+            <h2 id="demo-accounts-title" class="text-sm font-semibold text-slate-800">Demo Accounts</h2>
+            <p class="mt-1 text-xs text-slate-500">ជ្រើសរើសគណនីសាកល្បង ដើម្បីបំពេញព័ត៌មានចូលប្រើដោយស្វ័យប្រវត្តិ។</p>
+        </div>
+
+        <div class="grid gap-2 sm:grid-cols-2">
+            <button type="button"
+                onclick="fillDemoAccount('owner@demo.com', 'password123')"
+                class="rounded-lg border border-indigo-200 bg-white px-3 py-3 text-left text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                👤 ចូលជាម្ចាស់ហាង <span class="block mt-1 text-xs font-normal text-indigo-500">Shop Owner</span>
+            </button>
+
+            <button type="button"
+                onclick="fillDemoAccount('cashier@demo.com', 'password123')"
+                class="rounded-lg border border-emerald-200 bg-white px-3 py-3 text-left text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                💳 ចូលជាអ្នកគិតលុយ <span class="block mt-1 text-xs font-normal text-emerald-600">Cashier</span>
+            </button>
+        </div>
+    </section>
+
+    <script>
+        function fillDemoAccount(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+            document.getElementById('login-submit')?.focus();
+        }
+    </script>
 </x-guest-layout>

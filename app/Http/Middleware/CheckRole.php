@@ -30,6 +30,9 @@ class CheckRole
             if ($user->role === $role) {
                 return $next($request);
             }
+            if ($role === 'owner' && $user->role === 'shop_owner') {
+                return $next($request);
+            }
             if ($role === 'cashier' && $user->role === 'user') {
                 return $next($request);
             }
