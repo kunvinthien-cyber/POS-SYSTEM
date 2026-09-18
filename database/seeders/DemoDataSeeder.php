@@ -11,6 +11,7 @@ use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DemoDataSeeder extends Seeder
 {
@@ -21,7 +22,7 @@ class DemoDataSeeder extends Seeder
                 ['email' => 'owner@demo.com'],
                 [
                     'name' => 'Demo Shop Owner',
-                    'password' => 'password123',
+                    'password' => Hash::make('password123'),
                     'role' => 'shop_owner',
                 ]
             );
@@ -42,7 +43,7 @@ class DemoDataSeeder extends Seeder
                 ['email' => 'cashier@demo.com'],
                 [
                     'name' => 'Demo Cashier',
-                    'password' => 'password123',
+                    'password' => Hash::make('password123'),
                     'role' => 'cashier',
                     'shop_id' => $shop->id,
                 ]
