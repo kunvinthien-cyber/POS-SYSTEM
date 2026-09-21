@@ -6,4 +6,4 @@ services:
     rootDir: .
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /
+    healthCheckPath: /up
