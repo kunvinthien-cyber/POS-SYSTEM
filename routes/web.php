@@ -1,26 +1,36 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PosController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ExportController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\BackupController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+Route::get('/health', function () {
+    try {
+        DB::connection()->getPdo();
 
+        return response()->json(['status' => 'ok']);
+    } catch (Exception $e) {
+        return response()->json(['status' => 'db_error'], 200);
+    }
+});
 Route::get('/', function () {
     return request()->user() !== null
         ? redirect()->route('dashboard')
@@ -100,7 +110,7 @@ Route::middleware(['auth', 'shop.active', 'role:owner'])->group(function () {
 // ==========================================
 Route::middleware(['auth', 'role:admin'])->group(function () {
 
-     Route::resource('users', UserController::class);
+    Route::resource('users', UserController::class);
     Route::resource('shops', ShopController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     Route::patch('/shops/{shop}/suspend', [ShopController::class, 'suspend'])->name('shops.suspend');
 
