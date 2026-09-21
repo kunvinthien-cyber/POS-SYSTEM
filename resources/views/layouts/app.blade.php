@@ -11,7 +11,7 @@
 </head>
 
 <body class="font-sans antialiased">
-   @include('partials.waking-screen')
+    @include('partials.waking-screen')
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
 

@@ -1,9 +1,12 @@
-<div id="waking-overlay" class="waking-overlay">
+<div id="waking-overlay"
+    class="waking-overlay"
+    role="status"
+    aria-live="polite"
+    aria-label="កំពុងដាស់ Server">
     <div class="waking-card">
-        <div class="spinner"></div>
+        <div class="spinner" aria-hidden="true"></div>
         <h2>កំពុងដាស់ Server...</h2>
-        <p>Free hosting server ត្រូវការពេលប្រហែល 15-30 វិនាទីដើម្បី wake ឡើងវិញ</p>
-        <p class="sub-text">សូមអត់ធ្មត់មួយភ្លែត ⏳</p>
+        <p>Free hosting ត្រូវការពេលប្រហែល 15-30 វិនាទី ដើម្បីដំណើរការ។</p>
     </div>
 </div>
 
@@ -16,10 +19,11 @@
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    transition: opacity 0.3s ease;
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
-.waking-overlay.hidden {
+.waking-overlay.is-hidden {
     opacity: 0;
     pointer-events: none;
 }
@@ -34,8 +38,8 @@
 .spinner {
     width: 48px;
     height: 48px;
-    border: 4px solid rgba(255,255,255,0.2);
-    border-top-color: #3b82f6;
+    border: 4px solid rgba(248, 250, 252, 0.25);
+    border-top-color: #f8fafc;
     border-radius: 50%;
     margin: 0 auto 1.5rem;
     animation: spin 1s linear infinite;
@@ -53,58 +57,42 @@
 .waking-card p {
     color: #cbd5e1;
     font-size: 0.9rem;
+    line-height: 1.6;
     margin: 0.25rem 0;
-}
-
-.waking-card .sub-text {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-top: 1rem;
 }
 </style>
 
 <script>
 (function () {
     const overlay = document.getElementById('waking-overlay');
-    const healthUrl = '/health';
-    const timeoutMs = 20000;
-    const startTime = Date.now();
+    const healthUrl = '{{ url('/health') }}';
+    const checkIntervalMs = 2000;
+    const fallbackTimeoutMs = 20000;
+    let checkTimer;
+    let fallbackTimer;
 
     function hideOverlay() {
-        overlay.classList.add('hidden');
-        setTimeout(() => overlay.remove(), 300);
+        clearInterval(checkTimer);
+        clearTimeout(fallbackTimer);
+        overlay.classList.add('is-hidden');
     }
 
     function checkServer() {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        fetch(healthUrl, { signal: controller.signal, cache: 'no-store' })
-            .then((response) => {
-                clearTimeout(timeoutId);
-                if (response.ok) {
+        fetch(healthUrl, {
+            headers: { Accept: 'application/json' },
+            cache: 'no-store',
+        })
+            .then((response) => response.json().then((data) => ({ response, data })))
+            .then(({ response, data }) => {
+                if (response.ok && data.status === 'ok') {
                     hideOverlay();
-                } else {
-                    retryOrFail();
                 }
             })
-            .catch(() => {
-                clearTimeout(timeoutId);
-                retryOrFail();
-            });
+            .catch(() => {});
     }
 
-    function retryOrFail() {
-        const elapsed = Date.now() - startTime;
-        if (elapsed < timeoutMs) {
-            setTimeout(checkServer, 2000);
-        } else {
-            // Server ប្រហែលជា sleep យូរពេក - នៅតែបង្ហាញ overlay
-            // ឬអាច redirect ទៅ error page
-            hideOverlay(); // fallback: ទុកឲ្យ user ឃើញ page ធម្មតា
-        }
-    }
-
+    checkTimer = setInterval(checkServer, checkIntervalMs);
+    fallbackTimer = setTimeout(hideOverlay, fallbackTimeoutMs);
     checkServer();
 })();
 </script>
